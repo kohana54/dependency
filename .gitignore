@@ -17,3 +17,4 @@ nbproject/
 index.php
 tests/_output/*
 codeception.yml
+bin

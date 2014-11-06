@@ -1,0 +1,5 @@
+suites:
+  dependency_suite:
+    namespace: Fuel\Dependency
+    psr4_prefix: Fuel\Dependency
+formatter.name: pretty

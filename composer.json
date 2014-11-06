@@ -14,11 +14,15 @@
 		"php": ">=5.4"
 	},
 	"require-dev": {
-		"codeception/codeception": "~2.0.0"
+		"codeception/codeception": "~2.0.0",
+		"phpspec/phpspec": "~2.0"
 	},
 	"autoload": {
 		"psr-4": {
 			"Fuel\\Dependency\\": "src/"
 		}
+	},
+	"config": {
+		"bin-dir": "bin"
 	}
 }
