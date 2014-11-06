@@ -15,11 +15,16 @@
 	},
 	"require-dev": {
 		"codeception/codeception": "~2.0.0",
-		"phpspec/phpspec": "~2.0"
+		"phpspec/phpspec": "~2.1@dev"
 	},
 	"autoload": {
 		"psr-4": {
 			"Fuel\\Dependency\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Fuel\\Dependency\\Stub\\": "stub/"
 		}
 	},
 	"config": {
