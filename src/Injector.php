@@ -10,22 +10,53 @@
 
 namespace Fuel\Dependency;
 
+/**
+ * Implements pure injection logic without any container
+ */
 class Injector
 {
+	/**
+	 * Caches the currently processed class
+	 *
+	 * @var array
+	 */
 	private $beingMade = [];
 
+
+	/**
+	 * Creates a new instance
+	 *
+	 * @param string $className
+	 * @param array  $definition
+	 *
+	 * @return object
+	 */
 	public function make($className, array $definition = [])
 	{
 		$this->preventRecursiveDependency($className);
 
 		$object = $this->makeClass($className, $definition);
 
-		$this->unpreventRecursiveDependency($className);
+		$this->clearRecursiveDependency($className);
 
 		return $object;
 	}
 
+	/**
+	 * Creates a new class
+	 *
+	 * @param string $className
+	 * @param array  $definition
+	 *
+	 * @return object
+	 */
 	protected function makeClass($className, array $definition = [])
+	{
+		// here comes the container part later
+		return $this->createInstance($className, $definition);
+	}
+
+	protected function createInstance($className, array $definition = [])
 	{
 		try
 		{
@@ -33,12 +64,13 @@ class Injector
 		}
 		catch (\ReflectionException $e)
 		{
-			//nnot found
+			// not found
 		}
 
 		if ( ! $classReflector->isInstantiable())
 		{
 			// cannot be instantiated
+			// interfaces and abstracts should be handled here
 		}
 
 		if ( ! $constructorReflector = $classReflector->getConstructor())
@@ -46,20 +78,32 @@ class Injector
 			return new $className;
 		}
 
-		$parameters = $constructorReflector->getParameters();
-
-		$args = $this->generateArgs($parameters);
+		$args = $this->generateArgs($constructorReflector);
 
 		return $classReflector->newInstanceArgs($args);
 	}
 
-	protected function generateArgs(array $parameters)
+	protected function generateArgs(\ReflectionFunctionAbstract $function, array $definition = [])
 	{
+		$parameters = $function->getParameters();
+
 		$args = [];
 
 		foreach ($parameters as $parameterReflector)
 		{
-			if ($classReflector = $parameterReflector->getClass())
+			if ( ! $classReflector = $parameterReflector->getClass())
+			{
+				$args[] = null;
+			}
+			elseif ($parameterReflector->isDefaultValueAvailable())
+			{
+				$args[] = $parameterReflector->getDefaultValue();
+			}
+			elseif ($parameterReflector->isOptional())
+			{
+				$args[] = null;
+			}
+			else
 			{
 				$args[] = $this->make($classReflector->getName());
 			}
@@ -68,6 +112,13 @@ class Injector
 		return $args;
 	}
 
+	/**
+	 * Prevents the Injector from getting into an endless loop
+	 *
+	 * @param string $className
+	 *
+	 * @throws RecursiveDependencxException If $className is already being made
+	 */
 	private function preventRecursiveDependency($className)
 	{
 		if (isset($this->beingMade[$className]))
@@ -78,7 +129,12 @@ class Injector
 		$this->beingMade[$className] = true;
 	}
 
-	private function unpreventRecursiveDependency($className)
+	/**
+	 * Removes a class from the list of actually being made classes
+	 *
+	 * @param string $className
+	 */
+	private function clearRecursiveDependency($className)
 	{
 		unset($this->beingMade[$className]);
 	}
