@@ -12,12 +12,20 @@ namespace Fuel\Dependency;
 
 class Injector
 {
-	public function make($className)
+	private $beingMade = [];
+
+	public function make($className, array $definition = [])
 	{
-		return $this->makeClass($className);
+		$this->preventRecursiveDependency($className);
+
+		$object = $this->makeClass($className, $definition);
+
+		$this->unpreventRecursiveDependency($className);
+
+		return $object;
 	}
 
-	protected function makeClass($className)
+	protected function makeClass($className, array $definition = [])
 	{
 		try
 		{
@@ -58,5 +66,20 @@ class Injector
 		}
 
 		return $args;
+	}
+
+	private function preventRecursiveDependency($className)
+	{
+		if (isset($this->beingMade[$className]))
+		{
+			throw new RecursiveDependencyException;
+		}
+
+		$this->beingMade[$className] = true;
+	}
+
+	private function unpreventRecursiveDependency($className)
+	{
+		unset($this->beingMade[$className]);
 	}
 }

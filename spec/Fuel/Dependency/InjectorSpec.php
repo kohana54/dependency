@@ -27,4 +27,11 @@ class InjectorSpec extends ObjectBehavior
 
 		$object->dependency->shouldHaveType('stdClass');
 	}
+
+	function it_should_throw_an_exception_if_recursive_dependency_happens()
+	{
+		$this
+			->shouldThrow('Fuel\Dependency\RecursiveDependencyException')
+			->duringMake('Fuel\Dependency\Stub\RecursiveClass');
+	}
 }
