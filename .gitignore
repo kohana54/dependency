@@ -18,3 +18,5 @@ index.php
 tests/_output/*
 codeception.yml
 bin
+build
+phpspec.yml

@@ -34,4 +34,11 @@ class InjectorSpec extends ObjectBehavior
 			->shouldThrow('Fuel\Dependency\RecursiveDependencyException')
 			->duringMake('Fuel\Dependency\Stub\RecursiveClass');
 	}
+
+	public function it_should_be_able_to_bind_an_abstract_to_a_concrete()
+	{
+		$this->bind('Countable', 'stdClass');
+
+		$this->isBound('Countable')->shouldBe(true);
+	}
 }
