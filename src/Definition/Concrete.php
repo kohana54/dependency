@@ -34,16 +34,11 @@ class Concrete extends Reflectable
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve(Context $context, array $args = [])
+	protected function resolveObject(Context $context, array $args)
 	{
-		$args = $this->resolveArguments($context, array_replace($this->arguments, $args));
 		$class = new \ReflectionClass($this->className);
 
-		$object = $class->newInstanceArgs($args);
-
-		$this->invokeMethods($context, $object);
-
-		return $object;
+		return $class->newInstanceArgs($args);
 	}
 
 	/**

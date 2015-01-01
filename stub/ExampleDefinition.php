@@ -18,7 +18,7 @@ class ExampleDefinition extends Base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve(Context $context, array $args = [])
+	protected function resolveObject(Context $context, array $args)
 	{
 		// noop
 	}

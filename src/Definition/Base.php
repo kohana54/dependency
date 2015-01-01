@@ -61,6 +61,30 @@ abstract class Base implements Definition
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function resolve(Context $context, array $args = [])
+	{
+		$args = $this->resolveArguments($context, array_replace($this->arguments, $args));
+
+		$object = $this->resolveObject($context, $args);
+
+		$this->invokeMethods($context, $object);
+
+		return $object;
+	}
+
+	/**
+	 * The actual resolving logic
+	 *
+	 * @param Context $context
+	 * @param array   $args
+	 *
+	 * @return object
+	 */
+	abstract protected function resolveObject(Context $context, array $args);
+
+	/**
 	 * Resolve arguments passed to the definition
 	 *
 	 * @param Context $context

@@ -36,16 +36,11 @@ class Factory extends Reflectable
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve(Context $context, array $args = [])
+	protected function resolveObject(Context $context, array $args)
 	{
-		$args = $this->resolveArguments($context, array_replace($this->arguments, $args));
 		array_unshift($args, $context);
 
-		$object = call_user_func_array($this->callable, $args);
-
-		$this->invokeMethods($context, $object);
-
-		return $object;
+		return call_user_func_array($this->callable, $args);
 	}
 
 	/**
