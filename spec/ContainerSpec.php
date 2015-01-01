@@ -42,6 +42,12 @@ class ContainerSpec extends ObjectBehavior
 		$this->shouldThrow('Fuel\Dependency\Exception\DefinitionNotFound')->duringRegister('invalid', true);
 	}
 
+	function it_should_allow_to_register_a_singleton()
+	{
+		$this->register('test', 'Fuel\Dependency\Stub\SimpleClass', true)->shouldHaveType('Fuel\Dependency\Definition\Concrete');
+		$this->isSingleton('test');
+	}
+
 	function it_should_allow_to_add_a_definition(Definition $definition)
 	{
 		$this->isRegistered('test')->shouldReturn(false);
@@ -60,6 +66,13 @@ class ContainerSpec extends ObjectBehavior
 		$this->forge('test')->shouldHaveType('Fuel\Dependency\Stub\SimpleClass');
 	}
 
+	function it_should_allow_to_forge_a_registered_concrete_definition()
+	{
+		$this->register('Fuel\Dependency\Stub\SimpleClass')->addArgument('stdClass');
+
+		$this->forge('Fuel\Dependency\Stub\SimpleClass')->shouldHaveType('Fuel\Dependency\Stub\SimpleClass');
+	}
+
 	function it_should_throw_an_exception_when_trying_to_resolve_unresolvable_dependency()
 	{
 		$this->shouldThrow('Fuel\Dependency\Exception\UnresolvableDependency')->duringForge(true);
@@ -68,5 +81,42 @@ class ContainerSpec extends ObjectBehavior
 	function it_should_throw_an_exception_when_trying_to_resolve_recursive_dependency()
 	{
 		$this->shouldThrow('Fuel\Dependency\Exception\RecursiveDependency')->duringForge('Fuel\Dependency\Stub\RecursiveClass');
+	}
+
+	function it_should_allow_to_resolve_a_singleton()
+	{
+		$this->register('test', 'Fuel\Dependency\Stub\SimpleClass', true)->addArgument('stdClass');
+
+		$this->isSingleton('test')->shouldReturn(true);
+		$this->hasInstance('test')->shouldReturn(false);
+
+		$instance = $this->resolve('test');
+		$instance->shouldHaveType('Fuel\Dependency\Stub\SimpleClass');
+		$this->hasInstance('test')->shouldReturn(true);
+		$this->resolve('test')->shouldReturn($instance);
+	}
+
+	function it_should_allow_to_resolve_a_multiton()
+	{
+		$this->register('test', 'Fuel\Dependency\Stub\SimpleClass')->addArgument('stdClass');
+
+		$this->hasInstance('test', 'test')->shouldReturn(false);
+
+		$instance = $this->multiton('test', 'test');
+		$instance->shouldHaveType('Fuel\Dependency\Stub\SimpleClass');
+		$this->hasInstance('test', 'test')->shouldReturn(true);
+		$this->multiton('test', 'test')->shouldReturn($instance);
+	}
+
+	function it_should_allow_to_fallback_normal_resolution_when_instance_is_not_passed_to_multiton()
+	{
+		$this->register('test', 'Fuel\Dependency\Stub\SimpleClass', true)->addArgument('stdClass');
+
+		$this->hasInstance('test')->shouldReturn(false);
+
+		$instance = $this->multiton('test');
+		$instance->shouldHaveType('Fuel\Dependency\Stub\SimpleClass');
+		$this->hasInstance('test')->shouldReturn(true);
+		$this->multiton('test')->shouldReturn($instance);
 	}
 }
