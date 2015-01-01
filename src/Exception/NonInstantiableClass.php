@@ -11,15 +11,15 @@
 namespace Fuel\Dependency\Exception;
 
 /**
- * Thrown when an alias or one of its dependencies depend on itself
+ * Thrown when a class is not instantiable
  */
-class RecursiveDependency extends \Exception
+class NonInstantiableClass extends \Exception
 {
 	/**
-	 * @param string $alias
+	 * @param string $className
 	 */
-	public function __construct($alias)
+	public function __construct($className)
 	{
-		parent::__construct(sprintf('"%s" is already being resolved', $alias));
+		parent::__construct(sprintf('Class "%s" is not instantiable', $className));
 	}
 }

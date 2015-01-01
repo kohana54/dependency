@@ -10,12 +10,16 @@
 
 namespace Fuel\Dependency\Stub;
 
-class SimpleClass
-{
-	public $dependency;
+use Fuel\Dependency\Definition\Base;
+use Fuel\Dependency\Context;
 
-	public function __construct(\stdClass $dependency, $optional = null)
+class ExampleDefinition extends Base
+{
+	/**
+	 * {@inheritdoc}
+	 */
+	public function resolve(Context $context, array $args = [])
 	{
-		$this->dependency = $dependency;
+		// noop
 	}
 }

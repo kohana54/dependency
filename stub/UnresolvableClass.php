@@ -10,11 +10,11 @@
 
 namespace Fuel\Dependency\Stub;
 
-class SimpleClass
+class UnresolvableClass
 {
 	public $dependency;
 
-	public function __construct(\stdClass $dependency, $optional = null)
+	public function __construct($dependency)
 	{
 		$this->dependency = $dependency;
 	}

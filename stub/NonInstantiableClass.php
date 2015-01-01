@@ -8,6 +8,11 @@
  * @link       http://fuelphp.com
  */
 
-namespace Fuel\Dependency;
+namespace Fuel\Dependency\Stub;
 
-class InvalidExtensionException extends \Exception {}
+class NonInstantiableClass
+{
+	protected function __construct()
+	{
+	}
+}

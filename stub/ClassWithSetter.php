@@ -10,11 +10,11 @@
 
 namespace Fuel\Dependency\Stub;
 
-class SimpleClass
+class ClassWithSetter
 {
 	public $dependency;
 
-	public function __construct(\stdClass $dependency, $optional = null)
+	public function setDependency(\stdClass $dependency)
 	{
 		$this->dependency = $dependency;
 	}
