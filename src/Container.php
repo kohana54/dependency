@@ -240,7 +240,7 @@ class Container
 
 		$context = new Context($this, $instance, true);
 
-		return $this->instances[$instanceName] = $this->forge($alias, $args);
+		return $this->instances[$instanceName] = $this->forgeWithContext($context, $alias, $args);
 	}
 
 	/**
