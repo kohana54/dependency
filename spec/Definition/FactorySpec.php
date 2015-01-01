@@ -72,6 +72,6 @@ class FactorySpec extends ObjectBehavior
 
 	function it_should_throw_an_exception_when_callable_parameter_is_unresolvable()
 	{
-		$this->shouldThrow('Fuel\Dependency\Exception\UnresolvableDependency')->duringReflect(function($context) {});
+		$this->shouldThrow('Fuel\Dependency\Exception\UnresolvableDependency')->duringReflect(function($context, $anotherParam) {});
 	}
 }

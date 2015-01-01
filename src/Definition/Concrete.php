@@ -16,7 +16,7 @@ use Fuel\Dependency\Exception;
 /**
  * Concrete implementation definition
  */
-class Concrete extends Base
+class Concrete extends Reflectable
 {
 	/**
 	 * @var string
@@ -36,7 +36,7 @@ class Concrete extends Base
 	 */
 	public function resolve(Context $context, array $args = [])
 	{
-		$args = $this->resolveArguments($context, array_merge($this->arguments, $args));
+		$args = $this->resolveArguments($context, array_replace($this->arguments, $args));
 		$class = new \ReflectionClass($this->className);
 
 		$object = $class->newInstanceArgs($args);
@@ -69,22 +69,7 @@ class Concrete extends Base
 			return $definition;
 		}
 
-		foreach ($constructor->getParameters() as $parameter)
-		{
-			if ( ! $dependency = $parameter->getClass())
-			{
-				if ($parameter->isDefaultValueAvailable())
-				{
-					$definition->addArgument($parameter->getDefaultValue());
-
-					continue;
-				}
-
-				throw Exception\UnresolvableDependency::causedByNonClassParameter($parameter->getName(), $className);
-			}
-
-			$definition->addArgument($dependency->getName());
-		}
+		self::reflectParameters($constructor->getParameters(), $definition, $className);
 
 		return $definition;
 	}

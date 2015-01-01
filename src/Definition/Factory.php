@@ -16,7 +16,7 @@ use Fuel\Dependency\Exception;
 /**
  * Factory callable definition
  */
-class Factory extends Base
+class Factory extends Reflectable
 {
 	/**
 	 * Factory callable
@@ -61,27 +61,11 @@ class Factory extends Base
 
 		$definition = new self($callable);
 
-		foreach ($function->getParameters() as $parameter)
-		{
-			if ( ! $dependency = $parameter->getClass())
-			{
-				if ($parameter->isDefaultValueAvailable())
-				{
-					$definition->addArgument($parameter->getDefaultValue());
+		$parameters = $function->getParameters();
 
-					continue;
-				}
+		array_shift($parameters);
 
-				throw Exception\UnresolvableDependency::causedByNonClassParameter($parameter->getName(), '[callable]');
-			}
-
-			if ($dependency->getName() == 'Fuel\Dependency\Context')
-			{
-				continue;
-			}
-
-			$definition->addArgument($dependency->getName());
-		}
+		self::reflectParameters($parameters, $definition, '[callable]');
 
 		return $definition;
 	}
