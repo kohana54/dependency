@@ -98,21 +98,10 @@ abstract class Base implements Definition
 	 */
 	protected function invokeMethods(Context $context, $object)
 	{
-		// $class = new \ReflectionObject($object);
-
 		foreach ($this->methodCalls as $method => $args)
 		{
-			// if ( ! $class->hasMethod($method))
-			// {
-			// 	// throw exception here
-			// }
-
-			// $method = $class->getMethod($method);
-
 			$args = $this->resolveArguments($context, $args);
-			// check parameters
 			call_user_func_array([$object, $method], $args);
-			// $method->invokeArgs($object, $args);
 		}
 	}
 }
