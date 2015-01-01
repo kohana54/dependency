@@ -5,7 +5,6 @@ namespace spec\Fuel\Dependency;
 use Fuel\Dependency\Definition;
 use Fuel\Dependency\Stub\SimpleClass;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ContainerSpec extends ObjectBehavior
 {
