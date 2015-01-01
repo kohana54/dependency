@@ -22,9 +22,9 @@ abstract class Reflectable extends Base
 	 * Loop through a set of parameters and fill up a definition with dependencies
 	 *
 	 * @param \ReflectionParameter[] $parameters
-	 * @param self                   $definition
+	 * @param Reflectable            $definition
 	 */
-	protected static function reflectParameters(array $parameters, self $definition, $alias)
+	protected static function reflectParameters(array $parameters, Reflectable $definition, $alias)
 	{
 		foreach ($parameters as $parameter)
 		{
