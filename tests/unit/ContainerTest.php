@@ -1,6 +1,6 @@
 <?php
 /**
- * @package    Fuel\Dependency
+ * @package    Kohana\Dependency
  * @version    2.0
  * @author     Fuel Development Team
  * @license    MIT License
@@ -8,14 +8,14 @@
  * @link       http://fuelphp.com
  */
 
-namespace Fuel\Dependency;
+namespace Kohana\Dependency;
 
 use Codeception\TestCase\Test;
 
 class ContainerTest extends Test
 {
 	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
+	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
 	public function testResolveFail()
 	{
@@ -24,7 +24,7 @@ class ContainerTest extends Test
 	}
 
 	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
+	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
 	public function testForgeFail()
 	{
@@ -33,7 +33,7 @@ class ContainerTest extends Test
 	}
 
 	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
+	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
 	public function testAbstractFail()
 	{
@@ -64,7 +64,7 @@ class ContainerTest extends Test
 	{
 		$container = new Container();
 		$container->registerServices([new \InjectingService()]);
-		$this->assertInstanceOf('Fuel\Dependency\ServiceProvider', $container['service']);
+		$this->assertInstanceOf('Kohana\Dependency\ServiceProvider', $container['service']);
 	}
 
 	public function testSingletons()
@@ -152,7 +152,7 @@ class ContainerTest extends Test
 	}
 
 	/**
-	 * @expectedException \Fuel\Dependency\InvalidExtensionException
+	 * @expectedException \Kohana\Dependency\InvalidExtensionException
 	 */
 	public function testExtendsFailure()
 	{

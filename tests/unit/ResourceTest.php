@@ -1,6 +1,6 @@
 <?php
 /**
- * @package    Fuel\Dependency
+ * @package    Kohana\Dependency
  * @version    2.0
  * @author     Fuel Development Team
  * @license    MIT License
@@ -8,7 +8,7 @@
  * @link       http://fuelphp.com
  */
 
-namespace Fuel\Dependency;
+namespace Kohana\Dependency;
 
 use Codeception\TestCase\Test;
 use stdClass;
@@ -81,7 +81,7 @@ class ResourceTest extends Test
 	}
 
 	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
+	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
 	public function testConstructorClassFail()
 	{
@@ -94,7 +94,7 @@ class ResourceTest extends Test
 	}
 
 	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
+	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
 	public function testConstructorNoClassFail()
 	{

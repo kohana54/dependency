@@ -1,7 +1,7 @@
 <?php
 
-use Fuel\Dependency\ServiceProvider;
-use Fuel\Dependency\Container;
+use Kohana\Dependency\ServiceProvider;
+use Kohana\Dependency\Container;
 
 class RegisteringService implements ServiceProvider
 {

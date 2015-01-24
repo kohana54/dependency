@@ -1,6 +1,6 @@
 <?php
 /**
- * @package    Fuel\Dependency
+ * @package    Kohana\Dependency
  * @version    2.0
  * @author     Fuel Development Team
  * @license    MIT License
@@ -8,6 +8,6 @@
  * @link       http://fuelphp.com
  */
 
-namespace Fuel\Dependency;
+namespace Kohana\Dependency;
 
 class InvalidExtensionException extends \Exception {}
