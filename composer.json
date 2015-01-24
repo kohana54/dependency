@@ -1,13 +1,13 @@
 {
-	"name": "fuelphp/dependency",
-	"description": "FuelPHP Dependency handling",
+	"name": "kohana54/dependency",
+	"description": "Kohana54 Dependency handling",
 	"keywords": ["dependency", "injection", "dependencies"],
 	"homepage": "https://github.com/fuelphp/dependency",
 	"license": "MIT",
 	"authors": [
 		{
-			"name": "FuelPHP Development Team",
-			"email": "team@fuelphp.com"
+			"name": "Kohana54 Development Team",
+			"email": "team@kohana54.com"
 		}
 	],
 	"require": {
