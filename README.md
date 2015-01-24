@@ -1,15 +1,23 @@
-# Fuel Dependency
+# Kohana Dependency
 
 [![Build Status](https://travis-ci.org/fuelphp/dependency.svg?branch=master)](https://travis-ci.org/fuelphp/dependency)
 [![Code Coverage](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
 [![HHVM Status](http://hhvm.h4cc.de/badge/fuelphp/dependency.svg)](http://hhvm.h4cc.de/package/fuelphp/dependency)
 
-This is the FuelPHP Dependency package.
+This is the Kohana54 Dependency package
+
+The primary differences are:
+
+* Support of container-interop/container-interop ~1.0 interface
+* Removal of multiton pattern
+* Default behaviour is to share/bind instances rather than create factories
+* Rename methods to be more Kohana-esq
+* Supports injection of non Object constructor args
 
 ## Contents
 
-The Dependency package is a dependency injection implementation for the FuelPHP framework. In order to provide this functionality the package is responsible for:
+The Dependency package is a dependency injection implementation for the Kohana54 framework. In order to provide this functionality the package is responsible for:
 
 * Registering depedencies
 * Resolving dependencies
@@ -25,7 +33,7 @@ The container is the primary component of the dependency package and ties all th
 Create a new `Container`
 
 ``` php
-$container = new Fuel\Dependency\Container;
+$container = new Kohana54\Dependency\Container;
 ```
 
 ## Resources
@@ -45,13 +53,20 @@ $instance = $container->resolve('string');
 #### Closure resource:
 
 ``` php
-// Register
+
+// Register shared
 $container->register('closure.object', function() {
 	return new stdClass;
 });
 
 // Resolve
 $instance = $container->resolve('closure.object');
+
+$instance2 = $container->resolve('closure.object');
+
+$instance1 === $instance2
+// TRUE
+
 ```
 
 ## Extending
@@ -126,6 +141,39 @@ $container->register('Main', 'Main');
 $container->resolve('Main')->talk();
 ```
 
+## Non Object Constructor Injection
+
+```php
+
+class Hello {}
+
+class Main
+{
+	protected $args;
+
+	public function __construct(Hello $fake, $arg1, $arg2, $arg3 )
+	{
+		$this->args = func_get_args ();
+	}
+
+	public function debug()
+	{
+		var_dump($this->args);
+	}
+}
+
+$container = new Fuel\Dependency\Container;
+$container->register('Hello', 'Hello');
+$container->register('Main', 'Main');
+$container->resolve('Main', ['oranges', 'apples', 'pears', ':arg1' => 'apples', 'bananas'])->debug();
+
+array(1) {
+  [0] =>
+  class stdClass#1 (0) {
+  }
+}
+```
+
 ## Service Providers
 
 Service providers are used to expose packages to the Container. A Service
@@ -148,10 +196,10 @@ class MyProvider extends ServiceProvider
 		return $instance;
 	}
 
-	public function provide()
+	public function provide(Container $container)
 	{
-		$this->register('some.identifier', 'stdClass');
-		$this->registerSingleton('other.resource', function($container) {
+		$container->register('some.identifier', 'stdClass');
+		$container->registerSingleton('other.resource', function($container) {
 			return new Something($container->resolve('database.connection'));
 		));
 	}

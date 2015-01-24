@@ -10,14 +10,13 @@
 
 namespace Fuel\Dependency;
 
-abstract class ServiceProvider implements ResourceAwareInterface
+interface ServiceProvider
 {
-	use ContainerAware;
-
 	/**
 	 * Provides list of identifiers
 	 *
 	 * @var array|boolean
 	 */
-	public $provides;
+
+	public function provide(Container $container);
 }

@@ -41,9 +41,9 @@ trait ContainerAware
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register($identifier, $resource)
+	public function register($identifier, $resource, $singleton = TRUE)
 	{
-		$this->container->register($identifier, $resource);
+		$this->container->register($identifier, $resource, $singleton);
 
 		return $this;
 	}
@@ -51,9 +51,17 @@ trait ContainerAware
 	/**
 	 * {@inheritdoc}
 	 */
-	public function registerSingleton($identifier, $resource)
+	public function get($identifier, array $arguments = [])
 	{
-		$this->container->registerSingleton($identifier, $resource);
+		return $this->container->get($identifier, $arguments);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function bind($identifier, $instance)
+	{
+		$this->container->register($identifier, $instance, TRUE);
 
 		return $this;
 	}
@@ -61,35 +69,9 @@ trait ContainerAware
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve($identifier, array $arguments = [])
+	public function factory($identifier, array $arguments = [])
 	{
-		return $this->container->resolve($identifier, $arguments);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = [])
-	{
-		return $this->container->multiton($identifier, $name, $arguments);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function inject($identifier, $instance)
-	{
-		$this->container->registerSingleton($identifier, $instance);
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function forge($identifier, array $arguments = [])
-	{
-		return $this->container->forge($identifier, $arguments);
+		return $this->container->factory($identifier, $arguments);
 	}
 
 	/**
@@ -105,20 +87,6 @@ trait ContainerAware
 		$this->container->extend($identifier, $extension);
 
 		return $this;
-	}
-
-	/**
-	 * Attaches extensions to a multiton identifier
-	 *
-	 * @param string         $identifier
-	 * @param string         $name
-	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
-	 *
-	 * @return $this
-	 */
-	public function extendMultiton($identifier, $name, $extension)
-	{
-		return $this->container->extendMultiton($identifier, $name, $extension);
 	}
 
 	/**

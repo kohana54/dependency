@@ -1,43 +1,37 @@
 <?php
 
 use Fuel\Dependency\ServiceProvider;
+use Fuel\Dependency\Container;
 
-class RegisteringService extends ServiceProvider
+class RegisteringService implements ServiceProvider
 {
-	public $provides = true;
+	public $provides = TRUE;
 
-	public function provide()
+	public function provide(Container $container)
 	{
-		$this->registerSingleton('forge', function($container) {
+		$container->register('factory', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
-		$this->extend('forge', function($container, $instance)
+		$container->extend('factory', function($container, $instance)
 		{
 			$instance->extension = 'This Works!';
 		});
 
-		$forge = $this->forge('forge');
+		$factory = $container->factory('factory');
 
-		$this->registerSingleton('resolve', function($container) {
+		$container->register('resolve', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
-		$resolve = $this->resolve('resolve');
+		$resolve = $container->get('resolve');
 
-		$this->registerSingleton('resolveSingleton', function($container) {
+		$container->register('resolveSingleton', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
-		$this->extendMultiton('resolveSingleton', '__default__', function($container, $instance)
-		{
-			$instance->extension = 'This Works!';
-		});
-
-		$resolveSingleton = $this->multiton('resolveSingleton');
-
-		$this->register('from.service', function($container) use ($forge, $resolve, $resolveSingleton) {
-			return (object) compact('forge', 'resolve', 'resolveSingleton');
-		});
+		$container->register('from.service', function($container) use ($factory, $resolve) {
+			return (object) compact('factory', 'resolve');
+		}, FALSE);
 	}
 }

@@ -17,20 +17,11 @@ interface ResourceAwareInterface
 	 *
 	 * @param string $identifier
 	 * @param mixed  $resource
+	 * @param boolean $singleton
 	 *
 	 * @return $this
 	 */
-	public function register($identifier, $resource);
-
-	/**
-	 * Registers a singleton resource
-	 *
-	 * @param string $identifier
-	 * @param mixed  $resource
-	 *
-	 * @return $this
-	 */
-	public function registerSingleton($identifier, $resource);
+	public function register($identifier, $resource, $singleton);
 
 	/**
 	 * Injects an instance
@@ -40,7 +31,7 @@ interface ResourceAwareInterface
 	 *
 	 * @return $this
 	 */
-	public function inject($identifier, $instance);
+	public function bind($identifier, $instance);
 
 	/**
 	 * Resolves an instance from a resource
@@ -50,7 +41,7 @@ interface ResourceAwareInterface
 	 *
 	 * @return mixed
 	 */
-	public function resolve($identifier, array $arguments = []);
+	public function get($identifier, array $arguments = []);
 
 	/**
 	 * Creates a new instance from a resource
@@ -60,16 +51,6 @@ interface ResourceAwareInterface
 	 *
 	 * @return mixed
 	 */
-	public function forge($identifier, array $arguments = []);
+	public function factory($identifier, array $arguments = []);
 
-	/**
-	 * Resolves a named instance from a resource
-	 *
-	 * @param string $identifier
-	 * @param string $name
-	 * @param array  $arguments
-	 *
-	 * @return mixed
-	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = []);
 }

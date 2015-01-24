@@ -1,14 +1,15 @@
 <?php
 
 use Fuel\Dependency\ServiceProvider;
+use Fuel\Dependency\Container;
 
-class ExtensionService extends ServiceProvider
+class ExtensionService implements ServiceProvider
 {
 	public $provides = true;
 
-	public function provide()
+	public function provide(Container $container)
 	{
-		$this->extension('extension', function($container, $instance)
+		$container->extension('extension', function($container, $instance)
 		{
 			$instance->extension = 'This Works!';
 		});

@@ -20,7 +20,7 @@ class ContainerTest extends Test
 	public function testResolveFail()
 	{
 		$container = new Container();
-		$container->resolve('unknown.dependency');
+		$container->get('unknown.dependency');
 	}
 
 	/**
@@ -29,7 +29,7 @@ class ContainerTest extends Test
 	public function testForgeFail()
 	{
 		$container = new Container();
-		$container->forge('unknown.dependency');
+		$container->factory('unknown.dependency');
 	}
 
 	/**
@@ -38,26 +38,16 @@ class ContainerTest extends Test
 	public function testAbstractFail()
 	{
 		$container = new Container();
-		$container->forge('AbstractClass');
+		$container->factory('AbstractClass');
 	}
 
-	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
-	 */
-	public function testMultitonFail()
-	{
-		$container = new Container();
-		$container->multiton('unknown.dependency');
-		$container->isInstance('unknown','dependency');
-	}
 
 	public function testRegisteringService()
 	{
 		$container = new Container();
 		$container->registerService(new \RegisteringService());
 		$this->assertInstanceOf('stdClass', $container['from.service']);
-		$this->assertEquals('This Works!', $container['from.service']->forge->extension);
-		$this->assertEquals('This Works!', $container['from.service']->resolveSingleton->extension);
+		$this->assertEquals('This Works!', $container['from.service']->factory->extension);
 	}
 
 	public function testExtensionService()
@@ -80,23 +70,13 @@ class ContainerTest extends Test
 	public function testSingletons()
 	{
 		$container = new Container;
-		$container->registerSingleton('single', 'stdClass');
-		$container->register('other', 'stdClass');
+		$container->register('single', 'stdClass');
+		$container->register('other', 'stdClass', FALSE);
 		$this->assertTrue($container['single'] === $container['single']);
 		$this->assertTrue($container['single'] !== $container['other']);
-		$this->assertTrue($container['single'] !== $container->forge('single'));
+		$this->assertTrue($container['single'] !== $container->factory('single'));
 		$this->assertTrue($container['single'] == $container['other']);
 		$this->assertTrue($container->isInstance('single'));
-	}
-
-	public function testMultitons()
-	{
-		$container = new Container;
-		$container->register('m', 'stdClass');
-		$this->assertTrue($container->multiton('m', 'name') === $container->multiton('m', 'name'));
-		$this->assertTrue($container->multiton('m', 'name') !== $container->multiton('m', 'other'));
-		$this->assertTrue($container->multiton('m', 'name') == $container->multiton('m', 'other'));
-		$this->assertTrue($container->isInstance('m', 'name'));
 	}
 
 	public function testClassIdentifier()
@@ -112,7 +92,7 @@ class ContainerTest extends Test
 		$this->assertTrue(isset($container['stdClass']));
 		$container['offset'] = new \stdClass;
 		$this->assertTrue(isset($container['offset']));
-		$container->inject('stuff', 'stuff');
+		$container->bind('stuff', 'stuff');
 		$this->assertTrue(isset($container['stuff']));
 		unset($container['stuff']);
 		$this->assertFalse(isset($container['stuff']));
@@ -139,31 +119,6 @@ class ContainerTest extends Test
 		$this->assertEquals('de Jonge', $instance->surname);
 	}
 
-	public function testExtendsMultiton()
-	{
-		$container = new Container;
-		$container->register('id', 'stdClass');
-
-		$container->extend('id', function($container, $instance) {
-			$instance->name = 'Frank';
-		});
-
-		$container->extendMultiton('id', 'fullname', function($container, $instance) {
-			$instance->surname = 'de Jonge';
-
-			return $instance;
-		});
-
-		$instance = $container['id'];
-
-		$this->assertEquals('Frank', $instance->name);
-		$this->assertObjectNotHasAttribute('surname', $instance);
-
-		$instance = $container->multiton('id', 'fullname');
-
-		$this->assertEquals('Frank', $instance->name);
-		$this->assertEquals('de Jonge', $instance->surname);
-	}
 
 	public function testExtensions()
 	{

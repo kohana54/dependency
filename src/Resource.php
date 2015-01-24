@@ -15,6 +15,8 @@ use ReflectionParameter;
 
 class Resource
 {
+	const RAW_INJECTION_PREFIX = ':';
+
 	/**
 	 * @var mixed $translation
 	 */
@@ -52,12 +54,12 @@ class Resource
 	 *
 	 * @return mixed
 	 */
-	public function resolve(ResolveContext $context, array $arguments = [])
+	public function resolve(Container $container, array $arguments = [])
 	{
 		if (is_callable($this->translation))
 		{
 			$callback = $this->translation;
-			array_unshift($arguments, $context);
+			array_unshift($arguments, $container);
 
 			// calling the method directly is faster then call_user_func_array() !
 			switch (count($arguments))
@@ -96,17 +98,19 @@ class Resource
 		// Retrieve the constructor arguments
 		$parameters = $constructor->getParameters();
 
-		// Remove the parameters which are supplied
-		$parameters = array_slice($parameters, count($arguments));
+		$inject = [];
 
-		// Resolve the remaining parameters
+		// Resolve the remaining parameters, removing any :prefixed arguments from $arguments
 		foreach ($parameters as $parameter)
 		{
-			$arguments[] = $this->resolveParameter($context, $parameter);
+			$inject[] = $this->resolveParameter($container, $parameter, $arguments);
 		}
 
+		// Append any remainging args
+		$inject = array_merge($inject, $arguments);
+
 		// return a new instance with arguments.
-		return $class->newInstanceArgs($arguments);
+		return $class->newInstanceArgs($inject);
 	}
 
 	/**
@@ -119,8 +123,19 @@ class Resource
 	 *
 	 * @throws ResolveException  If the parameter is unresolvable
 	 */
-	protected function resolveParameter(ResolveContext $context, ReflectionParameter $parameter)
+	protected function resolveParameter(Container $container, ReflectionParameter $parameter, &$arguments = [])
 	{
+		// raw parameter has been provided
+		if(isset($arguments[static::RAW_INJECTION_PREFIX . $parameter->name]))
+		{
+			$raw = $arguments[static::RAW_INJECTION_PREFIX . $parameter->name];
+
+			unset($arguments[static::RAW_INJECTION_PREFIX . $parameter->name]);
+
+			return $raw;
+		}
+
+		// is not a class
 		if ($parameter->isDefaultValueAvailable())
 		{
 			return $parameter->getDefaultValue();
@@ -130,7 +145,7 @@ class Resource
 		{
 			try
 			{
-				return $context->resolve($class->name);
+				return $container->get($class->name);
 			}
 			catch (ResolveException $e)
 			{

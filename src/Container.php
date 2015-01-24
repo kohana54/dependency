@@ -47,7 +47,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register($identifier, $resource)
+	public function register($identifier, $resource, $singleton = TRUE)
 	{
 		if ( ! $resource instanceof Resource)
 		{
@@ -56,17 +56,10 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 		$this->resources[$identifier] = $resource;
 
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function registerSingleton($identifier, $resource)
-	{
-		$this->register($identifier, $resource);
-
-		$this->resources[$identifier]->preferSingleton(true);
+		if ($singleton === TRUE)
+		{
+			$this->resources[$identifier]->preferSingleton(true);
+		}
 
 		return $this;
 	}
@@ -80,16 +73,15 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function registerService(ServiceProvider $service)
 	{
-		$service->setContainer($this);
 
 		// The provider does not contain a list of resources...
-		if ($service->provides === true)
+		if (!isset($service->provides) or $service->provides == TRUE)
 		{
 			// ...so we fetch them all here...
-			$service->provide();
+			$service->provide($this);
 
 			// ...and prevent it from re-fetching in the future
-			$service->provides = false;
+			$service->provides = FALSE;
 		}
 
 		$this->services[get_class($service)] = $service;
@@ -117,7 +109,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function inject($identifier, $instance)
+	public function bind($identifier, $instance)
 	{
 		$this->instances[$identifier] = $instance;
 
@@ -182,7 +174,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 			/** @type ServiceProvider $service */
 			if ($service->provides and in_array($identifier, $service->provides))
 			{
-				$service->provide();
+				$service->provide($this);
 				$service->provides = false;
 
 				break;
@@ -214,7 +206,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve($identifier, array $arguments = [])
+	public function get($identifier, array $arguments = [])
 	{
 		// If we find a previously resolved instance
 		if ($instance = $this->getInstance($identifier))
@@ -226,11 +218,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		// Find the resource
 		$resource = $this->find($identifier);
 
-		// Get the context
-		$context = $this->getContext();
-
 		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
+		$instance = $resource->resolve($this, $arguments);
 
 		// Apply any supplied extensions
 		$instance = $this->applyExtensions($identifier, $instance);
@@ -248,66 +237,18 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function forge($identifier, array $arguments = [])
+	public function factory($identifier, array $arguments = [])
 	{
 		// Find the resource
 		$resource = $this->find($identifier);
 
-		// Get the context
-		$context = $this->getContext();
-
 		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
+		$instance = $resource->resolve($this, $arguments);
 
 		// Apply any supplied extensions
 		$instance = $this->applyExtensions($identifier, $instance);
 
 		return $instance;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = [])
-	{
-		$instanceName = $identifier.'::'.$name;
-
-		// If we find a previously resolved instance
-		if ($instance = $this->getInstance($instanceName))
-		{
-			// Return it
-			return $instance;
-		}
-
-		// Find the resource
-		$resource = $this->find($identifier);
-
-		// Get the context
-		$context = $this->getContext($name, true);
-
-		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
-
-		// Apply any supplied extensions
-		$instance = $this->applyExtensions($identifier, $instance);
-
-		// Apply any supplied extensions for multiton
-		$instance = $this->applyExtensions($instanceName, $instance);
-
-		return $this->instances[$instanceName] = $instance;
-	}
-
-	/**
-	 * Creates a new context
-	 *
-	 * @param string  $name
-	 * @param boolean $multiton
-	 *
-	 * @return ResolveContext
-	 */
-	public function getContext($name = null, $multiton = false)
-	{
-		return new ResolveContext($this, $name, $multiton);
 	}
 
 	/**
@@ -407,6 +348,16 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		}
 	}
 
+	public function has($identifier)
+	{
+		if ($this->getInstance($identifier) or $this->findResource($identifier))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Check if a resolved instance exists
 	 *
@@ -426,22 +377,18 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 	public function offsetExists($offset)
 	{
-		if ($this->getInstance($offset) or $this->findResource($offset))
-		{
-			return true;
-		}
-
-		return false;
+		return $this->has($offset);
 	}
 
 	public function offsetGet($offset)
 	{
-		return $this->resolve($offset);
+		return $this->get($offset);
 	}
 
 	public function offsetSet($offset, $resource)
 	{
-		$this->register($offset, $resource);
+		// register as singleton
+		$this->register($offset, $resource, TRUE);
 	}
 
 	public function offsetUnset($offset)

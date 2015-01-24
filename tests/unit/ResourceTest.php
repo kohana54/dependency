@@ -31,7 +31,6 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource(function($dic) {
 			return new stdClass;
@@ -39,7 +38,7 @@ class ResourceTest extends Test
 
 		$arguments = func_get_args();
 
-		$instance = $resource->resolve($context, $arguments);
+		$instance = $resource->resolve($container, $arguments);
 
 		$this->assertInstanceOf('stdClass', $instance);
 	}
@@ -60,11 +59,10 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource('stdClass');
 
-		$instance = $resource->resolve($context);
+		$instance = $resource->resolve($container);
 
 		$this->assertInstanceOf('stdClass', $instance);
 	}
@@ -73,11 +71,10 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource('Depending');
 
-		$instance = $resource->resolve($context);
+		$instance = $resource->resolve($container);
 
 		$this->assertInstanceOf('Depending', $instance);
 		$this->assertInstanceOf('DependedOn', $instance->dep);
@@ -90,11 +87,10 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorFail');
 
-		$resource->resolve($context);
+		$resource->resolve($container);
 	}
 
 	/**
@@ -104,23 +100,52 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorFailNoClass');
 
-		$resource->resolve($context);
+		$resource->resolve($container);
 	}
 
 	public function testConstructorDefault()
 	{
 		// TODO: use mockery
 		$container = new Container;
-		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorDefault');
 
-		$instance = $resource->resolve($context);
+		$instance = $resource->resolve($container);
 
 		$this->assertNull($instance->dep);
 	}
+
+	public function testConstructorMixed()
+	{
+		// TODO: use mockery
+		$container = new Container;
+
+		$resource = new Resource('ConstructorMixedScalar');
+
+		$instance = $resource->resolve($container, [':myScalar' => 'hello world!']);
+
+		$this->assertInstanceOf('DependedOn', $instance->dep);
+		$this->assertEquals('hello world!', $instance->myScalar);
+	}
+
+	public function testConstructorFuncGetArgs()
+	{
+		// TODO: use mockery
+		$container = new Container;
+
+		$resource = new Resource('ConstructorFuncGetArgs');
+
+		// DependedOn $dep and $foo should be injected first, followed by any remaining args.
+		$instance = $resource->resolve($container, ['a', 'b', 'c', ':foo' => 'd']);
+
+		$this->assertInstanceOf('DependedOn', $instance->args[0]);
+		$this->assertEquals('d', $instance->args[1]);
+		$this->assertEquals('a', $instance->args[2]);
+		$this->assertEquals('b', $instance->args[3]);
+		$this->assertEquals('c', $instance->args[4]);
+	}
+
 }

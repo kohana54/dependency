@@ -1,13 +1,14 @@
 <?php
 
 use Fuel\Dependency\ServiceProvider;
+use Fuel\Dependency\Container;
 
-class InjectingService extends ServiceProvider
+class InjectingService implements ServiceProvider
 {
 	public $provides = array('service');
 
-	public function provide()
+	public function provide(Container $container)
 	{
-		$this->inject('service', $this);
+		$container->bind('service', $this);
 	}
 }
