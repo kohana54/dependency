@@ -1,13 +1,13 @@
-# Kohana Dependency
+# Kohana54 Dependency
 
-[![Build Status](https://travis-ci.org/fuelphp/dependency.svg?branch=master)](https://travis-ci.org/fuelphp/dependency)
-[![Code Coverage](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
-[![HHVM Status](http://hhvm.h4cc.de/badge/fuelphp/dependency.svg)](http://hhvm.h4cc.de/package/fuelphp/dependency)
+[![Build Status](https://travis-ci.org/kohana54/dependency.svg?branch=master)](https://travis-ci.org/kohana54/dependency)
+[![Code Coverage](https://scrutinizer-ci.com/g/kohana54/dependency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kohana54/dependency/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kohana54/dependency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kohana54/dependency/?branch=master)
+[![HHVM Status](http://hhvm.h4cc.de/badge/kohana54/dependency.svg)](http://hhvm.h4cc.de/package/kohana54/dependency)
 
-This is the Kohana54 Dependency package
+This is the Kohana54 Dependency package, a fork of Fuel/Dependency
 
-The primary differences are:
+The primary differences between Kohana54/Dependency and Fuel/Dependency are:
 
 * Support of container-interop/container-interop ~1.0 interface
 * Removal of multiton pattern
@@ -19,7 +19,7 @@ The primary differences are:
 
 The Dependency package is a dependency injection implementation for the Kohana54 framework. In order to provide this functionality the package is responsible for:
 
-* Registering depedencies
+* Registering dependencies
 * Resolving dependencies
 * Storing instances for singletons and multitons.
 * Building instances with resolved constructor arguments.
