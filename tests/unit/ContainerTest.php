@@ -26,7 +26,7 @@ class ContainerTest extends Test
 	/**
 	 * @expectedException \Kohana\Dependency\ResolveException
 	 */
-	public function testForgeFail()
+	public function testFactoryFail()
 	{
 		$container = new Container();
 		$container->factory('unknown.dependency');
@@ -54,7 +54,7 @@ class ContainerTest extends Test
 	{
 		$container = new Container();
 		$container->registerService(new \ExtensionService());
-		$container->register('id', 'stdClass');
+		$container->bind('id', 'stdClass');
 		$container->extend('id', 'extension');
 		$instance = $container['id'];
 		$this->assertEquals('This Works!', $instance->extension);
@@ -70,8 +70,8 @@ class ContainerTest extends Test
 	public function testSingletons()
 	{
 		$container = new Container;
-		$container->register('single', 'stdClass');
-		$container->register('other', 'stdClass', FALSE);
+		$container->singleton('single', 'stdClass');
+		$container->bind('other', 'stdClass', FALSE);
 		$this->assertTrue($container['single'] === $container['single']);
 		$this->assertTrue($container['single'] !== $container['other']);
 		$this->assertTrue($container['single'] !== $container->factory('single'));
@@ -92,7 +92,7 @@ class ContainerTest extends Test
 		$this->assertTrue(isset($container['stdClass']));
 		$container['offset'] = new \stdClass;
 		$this->assertTrue(isset($container['offset']));
-		$container->bind('stuff', 'stuff');
+		$container->instance('stuff', 'stuff');
 		$this->assertTrue(isset($container['stuff']));
 		unset($container['stuff']);
 		$this->assertFalse(isset($container['stuff']));
@@ -101,7 +101,7 @@ class ContainerTest extends Test
 	public function testExtends()
 	{
 		$container = new Container;
-		$container->register('id', 'stdClass');
+		$container->bind('id', 'stdClass');
 
 		$container->extend('id', function($container, $instance) {
 			$instance->name = 'Frank';
@@ -123,8 +123,8 @@ class ContainerTest extends Test
 	public function testExtensions()
 	{
 		$container = new Container;
-		$container->register('id1', 'stdClass');
-		$container->register('id2', 'stdClass');
+		$container->bind('id1', 'stdClass');
+		$container->bind('id2', 'stdClass');
 
 		$container->extension('addName', function($container, $instance) {
 			$instance->name = 'Frank';
@@ -157,7 +157,7 @@ class ContainerTest extends Test
 	public function testExtendsFailure()
 	{
 		$container = new Container;
-		$container->register('id', 'stdClass');
+		$container->bind('id', 'stdClass');
 
 		$container->extend('id', 'this_is_not_a_callable');
 

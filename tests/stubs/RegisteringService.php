@@ -9,7 +9,7 @@ class RegisteringService implements ServiceProvider
 
 	public function provide(Container $container)
 	{
-		$container->register('factory', function($container) {
+		$container->singleton('factory', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
@@ -20,18 +20,18 @@ class RegisteringService implements ServiceProvider
 
 		$factory = $container->factory('factory');
 
-		$container->register('resolve', function($container) {
+		$container->singleton('resolve', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
 		$resolve = $container->get('resolve');
 
-		$container->register('resolveSingleton', function($container) {
+		$container->singleton('resolveSingleton', function($container) {
 			return (object) compact('container', 'arguments');
 		});
 
-		$container->register('from.service', function($container) use ($factory, $resolve) {
+		$container->bind('from.service', function($container) use ($factory, $resolve) {
 			return (object) compact('factory', 'resolve');
-		}, FALSE);
+		});
 	}
 }

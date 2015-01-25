@@ -21,7 +21,18 @@ interface ResourceAwareInterface
 	 *
 	 * @return $this
 	 */
-	public function register($identifier, $resource, $singleton);
+	public function bind($identifier, $resource, $singleton = FALSE);
+
+	/**
+	 * Registers a resource
+	 *
+	 * @param string $identifier
+	 * @param mixed  $resource
+	 * @param boolean $singleton
+	 *
+	 * @return $this
+	 */
+	public function singleton($identifier, $resource);
 
 	/**
 	 * Injects an instance
@@ -31,7 +42,7 @@ interface ResourceAwareInterface
 	 *
 	 * @return $this
 	 */
-	public function bind($identifier, $instance);
+	public function instance($identifier, $instance);
 
 	/**
 	 * Resolves an instance from a resource

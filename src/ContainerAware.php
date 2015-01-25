@@ -41,9 +41,19 @@ trait ContainerAware
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register($identifier, $resource, $singleton = TRUE)
+	public function bind($identifier, $resource, $singleton = FALSE)
 	{
-		$this->container->register($identifier, $resource, $singleton);
+		$this->container->bind($identifier, $resource, $singleton);
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function singleton($identifier, $resource)
+	{
+		$this->container->bind($identifier, $resource, TRUE);
 
 		return $this;
 	}
@@ -59,9 +69,9 @@ trait ContainerAware
 	/**
 	 * {@inheritdoc}
 	 */
-	public function bind($identifier, $instance)
+	public function instance($identifier, $instance)
 	{
-		$this->container->register($identifier, $instance, TRUE);
+		$this->container->instance($identifier, $instance);
 
 		return $this;
 	}

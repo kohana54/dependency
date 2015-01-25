@@ -9,6 +9,6 @@ class InjectingService implements ServiceProvider
 
 	public function provide(Container $container)
 	{
-		$container->bind('service', $this);
+		$container->instance('service', $this);
 	}
 }

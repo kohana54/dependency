@@ -47,7 +47,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register($identifier, $resource, $singleton = TRUE)
+	public function bind($identifier, $resource, $singleton = FALSE)
 	{
 		if ( ! $resource instanceof Resource)
 		{
@@ -62,6 +62,14 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		}
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function singleton($identifier, $resource)
+	{
+		return $this->bind($identifier, $resource, TRUE);
 	}
 
 	/**
@@ -109,7 +117,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function bind($identifier, $instance)
+	public function instance($identifier, $instance)
 	{
 		$this->instances[$identifier] = $instance;
 
@@ -267,22 +275,6 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Attaches extensions to a multiton identifier
-	 *
-	 * @param string          $identifier
-	 * @param string          $name
-	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
-	 *
-	 * @return $this
-	 */
-	public function extendMultiton($identifier, $name, $extension)
-	{
-		$identifier = $identifier.'::'.$name;
-
-		return $this->extend($identifier, $extension);
-	}
-
-	/**
 	 * Defines a generic resource extension
 	 *
 	 * @param string  $identifier
@@ -388,7 +380,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	public function offsetSet($offset, $resource)
 	{
 		// register as singleton
-		$this->register($offset, $resource, TRUE);
+		$this->bind($offset, $resource);
 	}
 
 	public function offsetUnset($offset)
